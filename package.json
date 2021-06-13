@@ -1,0 +1,25 @@
+{
+  "name": "comics-application",
+  "version": "1.0.0",
+  "description": "XKCD Comics Web App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hphan9/Comics-Application.git"
+  },
+  "author": "Emily Phan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hphan9/Comics-Application/issues"
+  },
+  "homepage": "https://github.com/hphan9/Comics-Application#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.7"
+  }
+}

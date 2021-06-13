@@ -1,0 +1,21 @@
+<div>
+    {{#with comic}}
+            <h2 id="title"> {{title}}</h2>
+            <p id="dateCreated">{{ date }} </p>
+        </div>
+         <!-- comic content-->
+        <div id= "comicPic"> 
+            <img src={{img}} alt={{alt}}>
+        </div>
+        <div id="nav">
+        <a id="btn-prev" href="/prev/{{num}}" >PREV </a> 
+        <a id="btn-random" href='/random'> RANDOM </a>
+        <a id="btn-next" href="/next/{{num}}"> NEXT </a> 
+        <p id="curr-page"> Current Page: {{num}} </p>
+    {{else}}
+    <div> 
+        <h3> Sorry, there is an error</h3>
+        <a id="btn" href="/" >Home </a> 
+    </div>
+    {{/with}}
+</div>
