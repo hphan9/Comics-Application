@@ -2,7 +2,7 @@
   "name": "comics-application",
   "version": "1.0.0",
   "description": "XKCD Comics Web App",
-  "main": "index.js",
+  "main": "server.js",
   "engines": {
     "node": "14.16.1"
   },
