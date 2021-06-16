@@ -12,6 +12,7 @@ const HTTP_PORT = process.env.PORT || 8080;
 // Add support for incoming JSON entities
 // body-parser extracts the entire body portion of an incoming request stream and exposes it on req.body as something easier to interface with.
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 // Add support for CORS
 app.use(cors());
 //server needs to know how to handle HTML files that are formatted using handlebars
@@ -25,17 +26,23 @@ function onHttpStart() {
 // make new comic format
 const createComic = function (resJson) {
   let date = new Date(resJson.year + " " + resJson.month + " " + resJson.day);
+  let temp= resJson.transcript;
+  temp = temp.replace(/[\[\]\{\} \( \)]/g,' ');
   let comic = {
     img: resJson.img,
     title: resJson.title,
     date: date.toDateString(),
-    num: resJson.num,
+    num: parseInt(resJson.num),
     alt: resJson.alt,
+    transcript:temp,
+    viewTimes: viewedList.get(resJson.num)
   };
   return comic;
 };
-// the max of the page.
-let MaxNum = 2000;
+// Map object to store the data of how many times a comic is view
+let viewedList= new Map();
+// the default max of the page.
+let MaxNum = 2400;
 
 app.use(express.static(path.join(__dirname, "public")));
 //GET / route
@@ -45,12 +52,23 @@ app.get("/", (req, res) => {
       return resObj.json();
     })
     .then(function (resJson) {
+      
+      if(viewedList.has(resJson.num)){
+        let currValue=  viewedList.get(resJson.num);
+        viewedList.set(resJson.num, currValue + 1);
+      }else{
+        viewedList.set(resJson.num,1);
+      }
+
       let comic = createComic(resJson);
       res.render("general/comic", {
         comic: comic,
       });
+      
       //the current comic has highest num in the comic list
       MaxNum = comic.num;
+      // view object
+
     })
     .catch((err) => {
       console.log(err);
@@ -60,28 +78,39 @@ app.get("/", (req, res) => {
 //Get /random route
 app.get("/random", (req, res) => {
   //get random Number
-  let randomNo = Math.floor(Math.random() * MaxNum);
-  res.redirect(`/${randomNo}`);
+  let randomNo = Math.floor(Math.random() * MaxNum + 1);
+  res.redirect(`/getId/${randomNo}`);
 });
 //get /next/:id route:
 app.get("/next/:id", (req, res) => {
   let index = parseInt(req.params.id) + 1;
   //if index is bigger than MaxNum -> make it equal to 0
   if (index > MaxNum) index = MaxNum;
-  res.redirect(`/${index}`);
+  res.redirect(`/getId/${index}`);
 });
 // get /prev/:id route:
 app.get("/prev/:id", (req, res) => {
   let index = parseInt(req.params.id) - 1;
   if (index < 1) index = 1;
-  res.redirect(`/${index}`);
+  res.redirect(`/getId/${index}`);
+});
+//search for index
+app.post("/searchIndex", (req,res)=>{
+let index= req.body.index;
+res.redirect(`/getId/${index}`);
 });
 //Get /:id route
-app.get("/:id", (req, res) => {
+app.get("/getId/:id", (req, res) => {
   let index = parseInt(req.params.id);
   fetch(`http://xkcd.com/${index}/info.0.json`)
     .then((res) => res.json())
     .then((resJson) => {
+      if(viewedList.has(resJson.num)){
+        let currValue=  viewedList.get(resJson.num);
+        viewedList.set(resJson.num, currValue + 1);
+      }else{
+        viewedList.set(resJson.num,1);
+      }
       let comic = createComic(resJson);
       res.render("general/comic", {
         comic: comic,

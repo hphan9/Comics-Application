@@ -1,21 +1,35 @@
+<div class="container"> 
 <div>
+<form action="/searchIndex" method="POST" >
+<input type="number" required id="inputIndex" name="index"  placeholder="Comic #"> 
+<button class="btn" type ="submit"> Search </button>
+</form>
+</div>
+
     {{#with comic}}
-            <h2 id="title"> {{title}}</h2>
-            <p id="dateCreated">{{ date }} </p>
-        </div>
+<div >
+        <h2 id="title"> {{title}}</h2>
+        <p id="dateCreated">{{ date }} </p>
          <!-- comic content-->
         <div id= "comicPic"> 
-            <img src={{img}} alt={{alt}}>
+            <img src={{img}} alt={{alt}} > </img>
         </div>
         <div id="nav">
-        <a id="btn-prev" href="/prev/{{num}}" >PREV </a> 
-        <a id="btn-random" href='/random'> RANDOM </a>
-        <a id="btn-next" href="/next/{{num}}"> NEXT </a> 
-        <p id="curr-page"> Current Page: {{num}} </p>
+        <a class="btn" id="btn-prev" href="/prev/{{num}}" >PREV </a> 
+        <a class= "btn" id="btn-random" href='/random'> RANDOM </a>
+        <a class="btn" id="btn-next" href="/next/{{num}}"> NEXT </a> 
+        <p  id="curr-page"> Current Page: {{num}} </p>
+        </div>
+        <div id="view" >
+        <h4> Transcript: </h4>
+        <p>{{transcript}}</p>
+        </div>
+</div>
     {{else}}
+
     <div> 
         <h3> Sorry, there is an error</h3>
         <a id="btn" href="/" >Home </a> 
     </div>
     {{/with}}
-</div>
+</div>  
