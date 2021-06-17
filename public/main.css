@@ -9,16 +9,17 @@ body,html {
     background-repeat: no-repeat;
 	background-attachment: fixed;
 }
-footer h3{
-    color:rgb(61, 189, 212);
-    padding-right: 10%;
-    text-align: end;
-}
+
 .container{
     display: flex;
     flex-direction: column;
     padding-left: 10%;
     padding-right: 10%;
+}
+@media screen and (max-width: 812px){.container{ 
+    padding-left: 5%;
+    padding-right: 5%;
+}
 }
 h1 {
     color:rgb(61, 189, 212);
@@ -28,9 +29,16 @@ h1 {
 h2{
     color: palevioletred;
     text-align: center;
+    font-size: 25px;
+    margin-bottom:5px;
 }
  h3 , h4, p{
     color: white;
+}
+#transcript p{
+    line-height: 25px;
+    font-size: 18px;
+    padding: 5px;
 }
 form{
     display: flex;
@@ -71,8 +79,7 @@ img {
 }
 
 
-  #info{
-    
+ #info{
       display: flex;
       justify-content: space-evenly;
   }
@@ -107,6 +114,8 @@ img {
      margin-top: 10px;
      margin-bottom: 10px;
  }
- #transcript p{
-     padding: 5px;
- }
+ footer h3{
+    color:rgb(61, 189, 212);
+    padding-right: 10%;
+    text-align: end;
+}

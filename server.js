@@ -22,12 +22,24 @@ app.set("view engine", "hbs");
 function onHttpStart() {
   console.log("Express http server listening on: " + HTTP_PORT);
 }
-
+// Map object to store the data of how many times a comic is view
+let viewedList= new Map();
+// the default max of the page.
+let MaxNum = 2400;
 // make new comic format
 const createComic = function (resJson) {
+  //create date
   let date = new Date(resJson.year + " " + resJson.month + " " + resJson.day);
+  // make transcript to be more readable
   let temp= resJson.transcript;
   temp = temp.replace(/[\[\]\{\} \( \)]/g,' ');
+  //check the views of comic
+  if(viewedList.has(resJson.num)){
+    let currValue=  viewedList.get(resJson.num);
+    viewedList.set(resJson.num, currValue + 1);
+  }else{
+    viewedList.set(resJson.num,1);
+  }
   let comic = {
     img: resJson.img,
     title: resJson.title,
@@ -39,10 +51,7 @@ const createComic = function (resJson) {
   };
   return comic;
 };
-// Map object to store the data of how many times a comic is view
-let viewedList= new Map();
-// the default max of the page.
-let MaxNum = 2400;
+
 
 app.use(express.static(path.join(__dirname, "public")));
 //GET / route
@@ -52,13 +61,6 @@ app.get("/", (req, res) => {
       return resObj.json();
     })
     .then(function (resJson) {
-      
-      if(viewedList.has(resJson.num)){
-        let currValue=  viewedList.get(resJson.num);
-        viewedList.set(resJson.num, currValue + 1);
-      }else{
-        viewedList.set(resJson.num,1);
-      }
 
       let comic = createComic(resJson);
       res.render("general/comic", {
@@ -105,12 +107,6 @@ app.get("/getId/:id", (req, res) => {
   fetch(`http://xkcd.com/${index}/info.0.json`)
     .then((res) => res.json())
     .then((resJson) => {
-      if(viewedList.has(resJson.num)){
-        let currValue=  viewedList.get(resJson.num);
-        viewedList.set(resJson.num, currValue + 1);
-      }else{
-        viewedList.set(resJson.num,1);
-      }
       let comic = createComic(resJson);
       res.render("general/comic", {
         comic: comic,
