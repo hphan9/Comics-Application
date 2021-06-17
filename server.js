@@ -35,7 +35,7 @@ let viewedList= new Map();
 // the default max of the page.
 let MaxNum = 2400;
 // make new comic format
-const createComic = function (resJson, view) {
+const createComic = function (resJson) {
   //create date
   let date = new Date(resJson.year + " " + resJson.month + " " + resJson.day);
   // make transcript to be more readable
