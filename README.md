@@ -5,7 +5,7 @@ The website displays XKCD web comic strips hosted on Heroku.
 * Back-end: Express and Node JS 
 * Template engine: Handlebars 
 Heroku link: https://xkcdwebcomic.herokuapp.com/ 
-## Features:
+## Functions:
 *	Use the xkcd API (see https://xkcd.com/json.html)
 *	Display 1 comic strip per page
 *	Buttons to navigate to the previous and next comic strip
