@@ -18,28 +18,29 @@ app.use(cors());
 //server needs to know how to handle HTML files that are formatted using handlebars
 app.engine("hbs", exphbs({ extname: "hbs" }));
 app.set("view engine", "hbs");
+//database
+const MONGODB_CONN_STRING= "mongodb+srv://hphan9:*Mochibeo1091@cluster0.uo1jj.mongodb.net/comicView?retryWrites=true&w=majority";
+
+// Import data
+const ComicDb = require("./modules/comicDB");
+const db = new ComicDb(MONGODB_CONN_STRING);
 
 function onHttpStart() {
   console.log("Express http server listening on: " + HTTP_PORT);
 }
+
+
 // Map object to store the data of how many times a comic is view
 let viewedList= new Map();
 // the default max of the page.
 let MaxNum = 2400;
 // make new comic format
-const createComic = function (resJson) {
+const createComic = function (resJson, view) {
   //create date
   let date = new Date(resJson.year + " " + resJson.month + " " + resJson.day);
   // make transcript to be more readable
   let temp= resJson.transcript;
   temp = temp.replace(/[\[\]\{\} \( \)]/g,' ');
-  //check the views of comic
-  if(viewedList.has(resJson.num)){
-    let currValue=  viewedList.get(resJson.num);
-    viewedList.set(resJson.num, currValue + 1);
-  }else{
-    viewedList.set(resJson.num,1);
-  }
   let comic = {
     img: resJson.img,
     title: resJson.title,
@@ -47,7 +48,7 @@ const createComic = function (resJson) {
     num: parseInt(resJson.num),
     alt: resJson.alt,
     transcript:temp,
-    viewTimes: viewedList.get(resJson.num)
+    view: 0
   };
   return comic;
 };
@@ -60,22 +61,30 @@ app.get("/", (req, res) => {
     .then(function (resObj) {
       return resObj.json();
     })
-    .then(function (resJson) {
-
-      let comic = createComic(resJson);
-      res.render("general/comic", {
-        comic: comic,
-      });
-      
-      //the current comic has highest num in the comic list
-      MaxNum = comic.num;
-      // view object
+    .then( resJson =>{
+     let comic= createComic(resJson);
+     return db.getViewByNum(comic.num)
+     .then(result=>{
+      if(result=== null){
+      comic.view= 1;
+      db.addNewView(comic.num, comic.view);
+      }else{
+      comic.view= result.view +1;
+      db.updateComicByNum(comic.view, comic.num)
+      } 
+      return Promise.resolve(comic);
+    }).catch(err=>Promise.reject(err))
 
     })
-    .catch((err) => {
-      console.log(err);
-      res.render("general/comic");
+    .then(comic => {res.render("general/comic", {
+      comic: comic,
     });
+    }
+    )
+    .catch(err=>{
+      console.log(err);
+      res.render("general/comic")
+      });
 });
 //Get /random route
 app.get("/random", (req, res) => {
@@ -106,20 +115,45 @@ app.get("/getId/:id", (req, res) => {
   let index = parseInt(req.params.id);
   fetch(`http://xkcd.com/${index}/info.0.json`)
     .then((res) => res.json())
-    .then((resJson) => {
-      let comic = createComic(resJson);
-      res.render("general/comic", {
-        comic: comic,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.render("general/comic");
-    });
+    .then( resJson =>{
+      let comic= createComic(resJson);
+      return db.getViewByNum(comic.num)
+      .then(result=>{
+       if(result=== null){
+       comic.view= 1;
+       db.addNewView(comic.num, comic.view);
+       }else{
+       comic.view= result.view +1;
+       db.updateComicByNum(comic.view, comic.num)
+       } 
+       return Promise.resolve(comic);
+     }).catch(err=>Promise.reject(err))
+ 
+     })
+     .then(comic => {res.render("general/comic", {
+       comic: comic,
+     });
+     }
+     )
+     .catch(err=>{
+       console.log(err);
+       res.render("general/comic")
+       });
 });
 // send back 404 if the routes is not in the list or requests to pages that are not found.
 app.use((req, res) => {
   res.status(404).send("Page Not Found");
 });
-//setup http server to listen on HTTP_PORT
-app.listen(HTTP_PORT, onHttpStart);
+
+
+
+//if the server starts successfully, then run hte code in the function onHttpStart
+db.initialize()
+  .then(() => {
+    app.listen(HTTP_PORT, () => {
+      console.log(`server listening on ${HTTP_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("THERE ARE AN ERROR " + err);
+  });
