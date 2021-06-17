@@ -7,24 +7,30 @@
 </div>
 
     {{#with comic}}
-<div >
+        <div class="view">
         <h2 id="title"> {{title}}</h2>
-        <p id="dateCreated">{{ date }} </p>
-         <!-- comic content-->
-        <div id= "comicPic"> 
-            <img src={{img}} alt={{alt}} > </img>
+        <div id="info">
+        <p id="dateCreated">{{ date }}  </p>
+        <p> Views: {{viewTimes}} </p>
         </div>
+        </div>
+         <!-- comic content-->
+      
+        <img src={{img}} alt={{alt}} > </img>
+        
         <div id="nav">
         <a class="btn" id="btn-prev" href="/prev/{{num}}" >PREV </a> 
         <a class= "btn" id="btn-random" href='/random'> RANDOM </a>
         <a class="btn" id="btn-next" href="/next/{{num}}"> NEXT </a> 
-        <p  id="curr-page"> Current Page: {{num}} </p>
         </div>
-        <div id="view" >
-        <h4> Transcript: </h4>
-        <p>{{transcript}}</p>
+        <div class="view" >
+        <p > Current Page: {{num}} </p>
+        <button onclick="transcriptAppear()" > Transcript </button>
+        <div id="transcript" style="display:none;">
+    
+        <p>{{transcript}} </p>
         </div>
-</div>
+        </div>
     {{else}}
 
     <div> 
