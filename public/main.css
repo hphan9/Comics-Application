@@ -35,11 +35,7 @@ h2{
  h3 , h4, p{
     color: white;
 }
-#transcript p{
-    line-height: 25px;
-    font-size: 18px;
-    padding: 5px;
-}
+
 form{
     display: flex;
     margin: 0 auto; 
@@ -113,7 +109,15 @@ img {
      border-color: white;
      margin-top: 10px;
      margin-bottom: 10px;
+     
+     background-color: whitesmoke;
  }
+ #transcript p{
+    line-height: 25px;
+    font-size: 18px;
+    padding: 5px;
+    color:black;
+}
  footer h3{
     color:rgb(61, 189, 212);
     padding-right: 10%;
